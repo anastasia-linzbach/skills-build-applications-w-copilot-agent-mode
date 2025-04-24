@@ -53,7 +53,7 @@ class Command(BaseCommand):
         except Exception as e:
             logging.error(f"Error populating database: {e}")
             self.stdout.write(self.style.ERROR('Failed to populate the database. Check logs for details.'))
-
+ 
 def parse_duration(duration_str):
     # Expects format 'HH:MM:SS'
     h, m, s = map(int, duration_str.split(':'))
