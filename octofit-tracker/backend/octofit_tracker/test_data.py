@@ -16,11 +16,11 @@ test_activities = [
 ]
 
 test_leaderboard = [
-    {"user": "john_doe", "points": 100},
-    {"user": "jane_smith", "points": 150}
+    {"user": "john_doe", "score": 100},
+    {"user": "jane_smith", "score": 150}
 ]
 
 test_workouts = [
-    {"name": "Morning Run", "description": "A quick morning run to start the day", "duration": 30},
-    {"name": "Evening Yoga", "description": "Relaxing yoga session", "duration": 60}
+    {"name": "Morning Run", "description": "A quick morning run to start the day"},
+    {"name": "Evening Yoga", "description": "Relaxing yoga session"}
 ]

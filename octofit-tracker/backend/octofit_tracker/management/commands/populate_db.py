@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 from django.core.management.base import BaseCommand
 from octofit.models import User, Team, Activity, Leaderboard, Workout
 from octofit_tracker.test_data import test_users, test_teams, test_activities, test_leaderboard, test_workouts
@@ -20,28 +21,40 @@ class Command(BaseCommand):
             # Populate teams
             for team_data in test_teams:
                 team, _ = Team.objects.get_or_create(name=team_data['name'])
-                team.members.set([user_objects[username] for username in team_data['members']])
+                if team_data.get('members'):
+                    try:
+                        team.members.set([user_objects[username] for username in team_data['members']])
+                    except Exception as e:
+                        self.stdout.write(self.style.ERROR(f'Error setting team members: {e}'))
 
             # Populate activities
             for activity_data in test_activities:
                 Activity.objects.get_or_create(
                     user=user_objects[activity_data['user']],
                     activity_type=activity_data['activity_type'],
-                    duration=activity_data['duration']
+                    duration=parse_duration(activity_data['duration'])
                 )
 
             # Populate leaderboard
             for leaderboard_data in test_leaderboard:
                 Leaderboard.objects.get_or_create(
                     user=user_objects[leaderboard_data['user']],
-                    points=leaderboard_data['points']
+                    score=leaderboard_data['score']
                 )
 
             # Populate workouts
             for workout_data in test_workouts:
-                Workout.objects.get_or_create(**workout_data)
+                Workout.objects.get_or_create(
+                    name=workout_data['name'],
+                    description=workout_data['description']
+                )
 
             self.stdout.write(self.style.SUCCESS('Database populated with test data.'))
         except Exception as e:
             logging.error(f"Error populating database: {e}")
             self.stdout.write(self.style.ERROR('Failed to populate the database. Check logs for details.'))
+
+def parse_duration(duration_str):
+    # Expects format 'HH:MM:SS'
+    h, m, s = map(int, duration_str.split(':'))
+    return timedelta(hours=h, minutes=m, seconds=s)
